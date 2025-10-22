@@ -19,7 +19,12 @@
   <!-- Header -->
   <header class="header">
     <h1>RefBox</h1>
-    <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div id="userInfo" class="user-info">
+        <!-- User info will be inserted here -->
+      </div>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    </div>
   </header>
 
   <!-- Main Content -->
@@ -63,6 +68,9 @@
         <button id="aboutBtn">
           ℹ️ À propos
         </button>
+        <button id="logoutBtn" style="border-color: var(--color-6); color: var(--color-6);">
+          🚪 Déconnexion
+        </button>
       </nav>
     </div>
   </div>
@@ -87,6 +95,16 @@
       </div>
     </div>
   </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+  <!-- Configuration et Auth -->
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
 
   <!-- Scripts -->
   <script src="app.js"></script>

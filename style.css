@@ -582,3 +582,220 @@ body {
     padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
   }
 }
+
+/* ============================================
+   LOGIN PAGE
+   ============================================ */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.login-logo {
+  font-size: 48px;
+  font-weight: bold;
+  background: linear-gradient(135deg, var(--color-1), var(--color-3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-sm);
+}
+
+.login-subtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+/* Onglets */
+.login-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  width: 100%;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: var(--border-radius-sm);
+}
+
+.login-tab {
+  flex: 1;
+  padding: var(--spacing-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.login-tab:hover {
+  color: var(--text-primary);
+}
+
+.login-tab.active {
+  background: var(--color-1);
+  color: white;
+}
+
+/* Formulaires de login */
+.login-form-container {
+  width: 100%;
+  margin-bottom: var(--spacing-lg);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Boutons de login */
+.login-btn {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--color-1);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
+}
+
+.login-btn:hover {
+  background: #ff5088;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+.login-btn:active {
+  transform: scale(0.98);
+}
+
+/* Bouton Google */
+.google-btn {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: white;
+  color: #333;
+  border: 2px solid #ddd;
+  border-radius: var(--border-radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  transition: all var(--transition-fast);
+}
+
+.google-btn:hover {
+  background: #f8f8f8;
+  border-color: #bbb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.google-btn:active {
+  transform: scale(0.98);
+}
+
+/* Séparateur */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg) 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #333;
+}
+
+/* Footer */
+.login-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  margin-top: var(--spacing-lg);
+}
+
+.text-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.text-link:hover {
+  color: var(--color-1);
+  text-decoration: underline;
+}
+
+/* Message info */
+.message.info {
+  background: rgba(0, 217, 255, 0.2);
+  border: 1px solid var(--color-3);
+  color: var(--color-3);
+}
+
+/* User info dans header */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 14px;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--color-1);
+}
+
+.user-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: var(--spacing-md);
+  }
+
+  .login-logo {
+    font-size: 36px;
+  }
+}

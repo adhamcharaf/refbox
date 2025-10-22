@@ -38,6 +38,10 @@
       <!-- Nom de la ref (hidden, pré-rempli) -->
       <input type="hidden" id="refId" name="refId" required>
 
+      <!-- Champs cachés pour traçabilité -->
+      <input type="hidden" id="userId" name="userId">
+      <input type="hidden" id="userEmail" name="userEmail">
+
       <div style="padding: 16px; background: var(--bg-secondary); border-radius: 12px; margin-bottom: 24px;">
         <strong style="font-size: 18px;">Ref sélectionnée :</strong>
         <div id="refName" style="font-size: 20px; color: var(--color-1); margin-top: 8px; font-weight: bold;">
@@ -105,6 +109,16 @@
     </form>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+  <!-- Configuration et Auth -->
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
+
   <script>
     /* ============================================
        GESTION DU FORMULAIRE
@@ -123,6 +137,27 @@
 
     // Taille max en bytes (10 MB)
     const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+    /* ============================================
+       AUTHENTIFICATION
+       ============================================ */
+
+    // Vérifier l'authentification au chargement
+    initAuthObserver((user) => {
+      if (!user) {
+        // Rediriger vers login si pas connecté
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Pré-remplir les champs utilisateur
+      const userInfo = getUserInfo();
+      if (userInfo) {
+        document.getElementById('userId').value = userInfo.uid;
+        document.getElementById('userEmail').value = userInfo.email;
+        document.getElementById('userName').value = userInfo.displayName;
+      }
+    });
 
     /* ============================================
        RÉCUPÉRATION DU PARAMÈTRE URL

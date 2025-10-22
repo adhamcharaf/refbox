@@ -261,6 +261,45 @@ function setupModal() {
       refreshBtn.innerHTML = '🔄 Rafraîchir l\'app';
     }, 2000);
   });
+
+  // Déconnexion
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      const result = await signOut();
+      if (result.success) {
+        window.location.href = 'login.html';
+      }
+    });
+  }
+}
+
+/* ============================================
+   GESTION DE L'AUTHENTIFICATION
+   ============================================ */
+
+// Afficher les informations utilisateur dans le header
+function updateUserDisplay() {
+  const userInfo = getUserInfo();
+  const userInfoContainer = document.getElementById('userInfo');
+
+  if (!userInfoContainer) return;
+
+  if (!userInfo) {
+    // Si pas connecté, afficher un lien de connexion
+    userInfoContainer.innerHTML = '<a href="login.html" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">Connexion</a>';
+    return;
+  }
+
+  // Afficher le nom et la photo de l'utilisateur
+  const photoHTML = userInfo.photoURL
+    ? `<img src="${userInfo.photoURL}" alt="${userInfo.displayName}" class="user-avatar">`
+    : `<div class="user-avatar" style="background: var(--color-1); display: flex; align-items: center; justify-content: center; font-weight: bold;">${userInfo.displayName.charAt(0).toUpperCase()}</div>`;
+
+  userInfoContainer.innerHTML = `
+    ${photoHTML}
+    <span class="user-name">${escapeHtml(userInfo.displayName)}</span>
+  `;
 }
 
 /* ============================================
@@ -271,11 +310,19 @@ function setupModal() {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('RefBox v1.0 - Initialisation...');
 
+  // Initialiser l'observateur d'authentification
+  initAuthObserver((user) => {
+    // Mettre à jour l'affichage utilisateur quand l'état d'auth change
+    updateUserDisplay();
+
+    // Charger les refs uniquement si l'utilisateur est connecté
+    if (user) {
+      loadRefs();
+    }
+  });
+
   // Configurer le modal
   setupModal();
-
-  // Charger les refs
-  loadRefs();
 
   // Support du pull-to-refresh sur mobile
   if ('onpulltorefresh' in window) {

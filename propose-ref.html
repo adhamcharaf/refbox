@@ -35,6 +35,10 @@
 
     <!-- Formulaire -->
     <form class="form" id="refForm" method="POST" action="https://formspree.io/f/xldpynzl">
+      <!-- Champs cachés pour traçabilité -->
+      <input type="hidden" id="userId" name="userId">
+      <input type="hidden" id="userEmail" name="userEmail">
+
       <!-- Nom de la ref -->
       <div class="form-group">
         <label for="refName">Nom de la ref *</label>
@@ -86,6 +90,16 @@
     </form>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+  <!-- Configuration et Auth -->
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
+
   <script>
     /* ============================================
        GESTION DU FORMULAIRE
@@ -95,6 +109,23 @@
     const submitBtn = document.getElementById('submitBtn');
     const successMessage = document.getElementById('successMessage');
     const errorMessage = document.getElementById('errorMessage');
+
+    // Vérifier l'authentification au chargement
+    initAuthObserver((user) => {
+      if (!user) {
+        // Rediriger vers login si pas connecté
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Pré-remplir les champs utilisateur
+      const userInfo = getUserInfo();
+      if (userInfo) {
+        document.getElementById('userId').value = userInfo.uid;
+        document.getElementById('userEmail').value = userInfo.email;
+        document.getElementById('userName').value = userInfo.displayName;
+      }
+    });
 
     // Validation en temps réel
     const refNameInput = document.getElementById('refName');
