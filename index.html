@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="RefBox - La soundboard collaborative de la team">
+  <meta name="theme-color" content="#FF6B9D">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <title>RefBox</title>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <h1>RefBox</h1>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- État vide (caché par défaut) -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <h2>Aucune ref pour l'instant !</h2>
+      <p>Sois le premier à en proposer 🎤</p>
+      <button class="cta-btn" onclick="window.location.href='propose-ref.html'">
+        ➕ Proposer la première ref
+      </button>
+    </div>
+
+    <!-- Grille de refs -->
+    <div class="refs-grid" id="refsGrid">
+      <!-- Les refs seront injectées ici par app.js -->
+    </div>
+  </main>
+
+  <!-- Footer / CTA -->
+  <footer class="footer">
+    <button class="cta-btn" onclick="window.location.href='propose-ref.html'">
+      ➕ Proposer une ref
+    </button>
+  </footer>
+
+  <!-- Modal Menu -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Menu</h2>
+        <button class="close-btn" id="closeModalBtn" aria-label="Fermer">×</button>
+      </div>
+      <nav class="modal-menu">
+        <button onclick="window.location.href='propose-ref.html'">
+          📝 Proposer une ref
+        </button>
+        <button id="refreshBtn">
+          🔄 Rafraîchir l'app
+        </button>
+        <button id="aboutBtn">
+          ℹ️ À propos
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Modal À propos -->
+  <div class="modal-overlay" id="aboutModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>À propos</h2>
+        <button class="close-btn" id="closeAboutBtn" aria-label="Fermer">×</button>
+      </div>
+      <div style="padding: 16px 0; color: var(--text-secondary); font-size: 14px; line-height: 1.6;">
+        <p style="margin-bottom: 12px;">
+          <strong style="color: var(--text-primary);">RefBox</strong> est la soundboard collaborative de la team.
+        </p>
+        <p style="margin-bottom: 12px;">
+          Propose tes refs favorites et contribue en enregistrant des sons !
+        </p>
+        <p style="font-size: 12px; opacity: 0.7;">
+          Version 1.0 • PWA installable
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    // Enregistrer le service worker pour le mode offline
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(registration => {
+            console.log('Service Worker enregistré:', registration.scope);
+          })
+          .catch(error => {
+            console.log('Erreur Service Worker:', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>

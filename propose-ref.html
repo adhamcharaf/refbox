@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Propose une nouvelle ref pour RefBox">
+  <meta name="theme-color" content="#FF6B9D">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <title>Proposer une ref - RefBox</title>
+</head>
+<body>
+  <div class="form-page">
+    <!-- Header -->
+    <div class="form-header">
+      <h1>Balance ta ref ! 💬</h1>
+      <p>Propose une phrase ou un cri mythique de la team</p>
+    </div>
+
+    <!-- Message de succès (caché par défaut) -->
+    <div id="successMessage" class="message success" style="display: none;">
+      ✓ Ref proposée avec succès ! Elle sera bientôt disponible.
+    </div>
+
+    <!-- Message d'erreur (caché par défaut) -->
+    <div id="errorMessage" class="message error" style="display: none;">
+      Erreur lors de l'envoi. Réessaie dans un instant.
+    </div>
+
+    <!-- Formulaire -->
+    <form class="form" id="refForm" method="POST" action="https://formspree.io/f/xldpynzl">
+      <!-- Nom de la ref -->
+      <div class="form-group">
+        <label for="refName">Nom de la ref *</label>
+        <input
+          type="text"
+          id="refName"
+          name="refName"
+          placeholder='ex: "Ayudame"'
+          required
+          maxlength="30"
+          autocomplete="off"
+        >
+        <small>Maximum 30 caractères</small>
+      </div>
+
+      <!-- Contexte/Explication -->
+      <div class="form-group">
+        <label for="context">Contexte ou explication (optionnel)</label>
+        <textarea
+          id="context"
+          name="context"
+          placeholder="Raconte l'histoire derrière cette ref..."
+          maxlength="500"
+        ></textarea>
+        <small>Maximum 500 caractères</small>
+      </div>
+
+      <!-- Ton nom -->
+      <div class="form-group">
+        <label for="userName">Ton nom *</label>
+        <input
+          type="text"
+          id="userName"
+          name="userName"
+          placeholder="ex: Mamadou"
+          required
+          maxlength="50"
+          autocomplete="name"
+        >
+      </div>
+
+      <!-- Bouton submit -->
+      <button type="submit" class="submit-btn" id="submitBtn">
+        Proposer
+      </button>
+
+      <!-- Lien retour -->
+      <a href="index.html" class="back-link">← Retour au soundboard</a>
+    </form>
+  </div>
+
+  <script>
+    /* ============================================
+       GESTION DU FORMULAIRE
+       ============================================ */
+
+    const form = document.getElementById('refForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Validation en temps réel
+    const refNameInput = document.getElementById('refName');
+    const userNameInput = document.getElementById('userName');
+
+    // Empêcher les caractères spéciaux dans le nom de la ref
+    refNameInput.addEventListener('input', (e) => {
+      // Limiter la longueur
+      if (e.target.value.length > 30) {
+        e.target.value = e.target.value.slice(0, 30);
+      }
+    });
+
+    // Soumission du formulaire
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Validation
+      if (!refNameInput.value.trim() || !userNameInput.value.trim()) {
+        showError('Merci de remplir tous les champs obligatoires');
+        return;
+      }
+
+      // Désactiver le bouton pendant l'envoi
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="loading"></span> Envoi en cours...';
+
+      // Cacher les messages précédents
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+
+      try {
+        // Envoyer les données à Formspree
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          // Succès
+          showSuccess();
+
+          // Réinitialiser le formulaire
+          form.reset();
+
+          // Rediriger vers l'accueil après 3 secondes
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 3000);
+        } else {
+          throw new Error('Erreur serveur');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        showError('Une erreur est survenue. Réessaie dans un instant.');
+      } finally {
+        // Réactiver le bouton
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Proposer';
+      }
+    });
+
+    // Afficher le message de succès
+    function showSuccess() {
+      successMessage.style.display = 'block';
+      errorMessage.style.display = 'none';
+
+      // Scroll vers le haut pour voir le message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Afficher le message d'erreur
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+      successMessage.style.display = 'none';
+
+      // Scroll vers le haut pour voir le message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Sauvegarder le nom de l'utilisateur dans localStorage
+    const savedUserName = localStorage.getItem('refbox_username');
+    if (savedUserName) {
+      userNameInput.value = savedUserName;
+    }
+
+    // Sauvegarder le nom à chaque modification
+    userNameInput.addEventListener('blur', () => {
+      if (userNameInput.value.trim()) {
+        localStorage.setItem('refbox_username', userNameInput.value.trim());
+      }
+    });
+  </script>
+</body>
+</html>

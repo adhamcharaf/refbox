@@ -1,0 +1,36 @@
+{
+  "refs": [
+    {
+      "id": "ayudame",
+      "name": "Ayudame",
+      "hasSound": false,
+      "soundUrl": null,
+      "addedBy": "Mamadou",
+      "dateAdded": "2025-10-22"
+    },
+    {
+      "id": "cest-parti",
+      "name": "C'est parti !",
+      "hasSound": true,
+      "soundUrl": "sounds/cest-parti.mp3",
+      "addedBy": "Alex",
+      "dateAdded": "2025-10-20"
+    },
+    {
+      "id": "on-y-va",
+      "name": "On y va",
+      "hasSound": false,
+      "soundUrl": null,
+      "addedBy": "Sophie",
+      "dateAdded": "2025-10-21"
+    },
+    {
+      "id": "lets-go",
+      "name": "Let's go!",
+      "hasSound": true,
+      "soundUrl": "sounds/lets-go.mp3",
+      "addedBy": "Thomas",
+      "dateAdded": "2025-10-19"
+    }
+  ]
+}

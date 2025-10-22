@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Icon Generator - RefBox</title>
+  <style>
+    body { font-family: system-ui; padding: 20px; background: #1a1a1a; color: white; }
+    canvas { border: 2px solid #333; margin: 10px; }
+    button { padding: 12px 24px; background: #FF6B9D; color: white; border: none;
+             border-radius: 8px; cursor: pointer; font-size: 16px; margin: 5px; }
+    button:hover { background: #ff5088; }
+    .container { display: flex; flex-direction: column; align-items: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>RefBox Icon Generator</h1>
+    <p>Clique sur les boutons pour télécharger les icônes PNG</p>
+
+    <div>
+      <h2>192x192</h2>
+      <canvas id="canvas192" width="192" height="192"></canvas>
+      <br>
+      <button onclick="downloadIcon(192)">Télécharger icon-192.png</button>
+    </div>
+
+    <div>
+      <h2>512x512</h2>
+      <canvas id="canvas512" width="512" height="512"></canvas>
+      <br>
+      <button onclick="downloadIcon(512)">Télécharger icon-512.png</button>
+    </div>
+  </div>
+
+  <script>
+    // Fonction pour dessiner l'icône sur un canvas
+    function drawIcon(canvas, size) {
+      const ctx = canvas.getContext('2d');
+      const borderRadius = size / 6;
+
+      // Fond coloré avec coins arrondis
+      ctx.fillStyle = '#FF6B9D';
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, borderRadius);
+      ctx.fill();
+
+      // Texte RB
+      ctx.fillStyle = 'white';
+      ctx.font = `bold ${size * 0.42}px system-ui, -apple-system, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('RB', size / 2, size / 2);
+    }
+
+    // Fonction pour télécharger l'icône
+    function downloadIcon(size) {
+      const canvas = document.getElementById(`canvas${size}`);
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `icon-${size}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    // Dessiner les icônes au chargement
+    window.addEventListener('load', () => {
+      drawIcon(document.getElementById('canvas192'), 192);
+      drawIcon(document.getElementById('canvas512'), 512);
+    });
+  </script>
+</body>
+</html>

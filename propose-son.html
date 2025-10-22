@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Propose un son pour une ref">
+  <meta name="theme-color" content="#FF6B9D">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <title>Proposer un son - RefBox</title>
+</head>
+<body>
+  <div class="form-page">
+    <!-- Header -->
+    <div class="form-header">
+      <h1>Envoie ton son ! 🎤</h1>
+      <p id="refInfo">Charge le fichier audio pour cette ref</p>
+    </div>
+
+    <!-- Message de succès (caché par défaut) -->
+    <div id="successMessage" class="message success" style="display: none;">
+      ✓ Son proposé avec succès ! Il sera bientôt en ligne.
+    </div>
+
+    <!-- Message d'erreur (caché par défaut) -->
+    <div id="errorMessage" class="message error" style="display: none;">
+      Erreur lors de l'envoi. Vérifie le fichier et réessaie.
+    </div>
+
+    <!-- Formulaire -->
+    <form class="form" id="sonForm" method="POST" action="https://formspree.io/f/xeorbknp" enctype="multipart/form-data">
+      <!-- Nom de la ref (hidden, pré-rempli) -->
+      <input type="hidden" id="refId" name="refId" required>
+
+      <div style="padding: 16px; background: var(--bg-secondary); border-radius: 12px; margin-bottom: 24px;">
+        <strong style="font-size: 18px;">Ref sélectionnée :</strong>
+        <div id="refName" style="font-size: 20px; color: var(--color-1); margin-top: 8px; font-weight: bold;">
+          -
+        </div>
+      </div>
+
+      <!-- Upload fichier audio -->
+      <div class="form-group">
+        <label for="audioFile">Fichier audio *</label>
+        <div class="file-input-wrapper">
+          <label for="audioFile" class="file-input-label" id="fileLabel">
+            <span style="font-size: 32px;">🎵</span>
+            <div>
+              <div style="font-weight: 600; margin-bottom: 4px;">Clique pour choisir un fichier</div>
+              <div style="font-size: 12px; opacity: 0.7;">MP3, M4A ou WAV (max 10 MB)</div>
+            </div>
+          </label>
+          <input
+            type="file"
+            id="audioFile"
+            name="audioFile"
+            class="file-input"
+            accept=".mp3,.m4a,.wav,audio/mpeg,audio/mp4,audio/wav"
+            required
+          >
+          <div id="fileName" class="file-name"></div>
+        </div>
+        <small>Formats acceptés : MP3, M4A, WAV • Taille max : 10 MB</small>
+      </div>
+
+      <!-- Ton nom -->
+      <div class="form-group">
+        <label for="userName">Ton nom *</label>
+        <input
+          type="text"
+          id="userName"
+          name="userName"
+          placeholder="ex: Mamadou"
+          required
+          maxlength="50"
+          autocomplete="name"
+        >
+      </div>
+
+      <!-- Note/Contexte -->
+      <div class="form-group">
+        <label for="note">Note ou contexte (optionnel)</label>
+        <textarea
+          id="note"
+          name="note"
+          placeholder="Précisions sur l'enregistrement, la qualité, etc."
+          maxlength="300"
+        ></textarea>
+        <small>Maximum 300 caractères</small>
+      </div>
+
+      <!-- Bouton submit -->
+      <button type="submit" class="submit-btn" id="submitBtn">
+        Envoyer mon son
+      </button>
+
+      <!-- Lien retour -->
+      <a href="index.html" class="back-link">← Retour au soundboard</a>
+    </form>
+  </div>
+
+  <script>
+    /* ============================================
+       GESTION DU FORMULAIRE
+       ============================================ */
+
+    const form = document.getElementById('sonForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    const fileInput = document.getElementById('audioFile');
+    const fileLabel = document.getElementById('fileLabel');
+    const fileName = document.getElementById('fileName');
+    const refIdInput = document.getElementById('refId');
+    const refNameDisplay = document.getElementById('refName');
+    const refInfo = document.getElementById('refInfo');
+
+    // Taille max en bytes (10 MB)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+    /* ============================================
+       RÉCUPÉRATION DU PARAMÈTRE URL
+       ============================================ */
+
+    // Récupérer le paramètre ?ref= depuis l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const refParam = urlParams.get('ref');
+
+    if (!refParam) {
+      // Si pas de paramètre, rediriger vers l'accueil
+      showError('Aucune ref spécifiée. Retour au soundboard...');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 2000);
+    } else {
+      // Charger les infos de la ref depuis refs.json
+      loadRefInfo(refParam);
+    }
+
+    // Charger les infos de la ref
+    async function loadRefInfo(refId) {
+      try {
+        const response = await fetch(`refs.json?t=${Date.now()}`);
+        if (!response.ok) throw new Error('Impossible de charger les refs');
+
+        const data = await response.json();
+        const ref = data.refs.find(r => r.id === refId);
+
+        if (ref) {
+          // Afficher le nom de la ref
+          refNameDisplay.textContent = ref.name;
+          refInfo.textContent = `Propose un son pour : ${ref.name}`;
+          refIdInput.value = ref.id;
+        } else {
+          throw new Error('Ref non trouvée');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        showError('Ref introuvable. Retour au soundboard...');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
+      }
+    }
+
+    /* ============================================
+       GESTION DU FICHIER
+       ============================================ */
+
+    // Changement de fichier
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+
+      if (!file) {
+        resetFileInput();
+        return;
+      }
+
+      // Validation de la taille
+      if (file.size > MAX_FILE_SIZE) {
+        showError(`Le fichier est trop volumineux (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum : 10 MB.`);
+        resetFileInput();
+        return;
+      }
+
+      // Validation du format
+      const validFormats = ['audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/x-m4a', 'audio/wav', 'audio/wave'];
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      const validExtensions = ['mp3', 'm4a', 'wav'];
+
+      if (!validFormats.includes(file.type) && !validExtensions.includes(fileExtension)) {
+        showError('Format de fichier non valide. Utilise MP3, M4A ou WAV.');
+        resetFileInput();
+        return;
+      }
+
+      // Afficher le nom du fichier
+      fileName.textContent = `✓ ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+      fileLabel.classList.add('has-file');
+
+      // Cacher les messages d'erreur
+      errorMessage.style.display = 'none';
+    });
+
+    // Réinitialiser l'input fichier
+    function resetFileInput() {
+      fileInput.value = '';
+      fileName.textContent = '';
+      fileLabel.classList.remove('has-file');
+    }
+
+    /* ============================================
+       SOUMISSION DU FORMULAIRE
+       ============================================ */
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Validation
+      const file = fileInput.files[0];
+      const userName = document.getElementById('userName').value.trim();
+
+      if (!file) {
+        showError('Merci de sélectionner un fichier audio');
+        return;
+      }
+
+      if (!userName) {
+        showError('Merci d\'indiquer ton nom');
+        return;
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        showError('Le fichier est trop volumineux (max 10 MB)');
+        return;
+      }
+
+      // Désactiver le bouton pendant l'envoi
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="loading"></span> Envoi en cours...';
+
+      // Cacher les messages précédents
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+
+      try {
+        // Envoyer les données à Formspree
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          // Succès
+          showSuccess();
+
+          // Réinitialiser le formulaire
+          form.reset();
+          resetFileInput();
+
+          // Rediriger vers l'accueil après 3 secondes
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 3000);
+        } else {
+          throw new Error('Erreur serveur');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        showError('Une erreur est survenue. Vérifie ta connexion et réessaie.');
+      } finally {
+        // Réactiver le bouton
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Envoyer mon son';
+      }
+    });
+
+    /* ============================================
+       UTILITAIRES
+       ============================================ */
+
+    // Afficher le message de succès
+    function showSuccess() {
+      successMessage.style.display = 'block';
+      errorMessage.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Afficher le message d'erreur
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+      successMessage.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Sauvegarder le nom de l'utilisateur
+    const savedUserName = localStorage.getItem('refbox_username');
+    if (savedUserName) {
+      document.getElementById('userName').value = savedUserName;
+    }
+
+    document.getElementById('userName').addEventListener('blur', (e) => {
+      if (e.target.value.trim()) {
+        localStorage.setItem('refbox_username', e.target.value.trim());
+      }
+    });
+  </script>
+</body>
+</html>
