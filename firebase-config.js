@@ -1,28 +1,19 @@
-/* ============================================
-   FIREBASE CONFIGURATION
-   ============================================ */
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-// IMPORTANT: Remplace ces valeurs par tes propres credentials Firebase
-// Obtiens-les depuis: Firebase Console > Project Settings > Your apps > Web app
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAfv1Oz0L0LzZuPf0dfXKFbdNkKy_NAXnU",
+    authDomain: "refbox-a3845.firebaseapp.com",
+    projectId: "refbox-a3845",
+    storageBucket: "refbox-a3845.firebasestorage.app",
+    messagingSenderId: "1015497034547",
+    appId: "1:1015497034547:web:c6d34b3a530ee65b73cc46"
+  };
 
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-
-// Initialiser Firebase
-firebase.initializeApp(firebaseConfig);
-
-// Exporter les services Firebase
-const auth = firebase.auth();
-const db = firebase.firestore(); // Pour future migration (Phase 2)
-const storage = firebase.storage(); // Pour future migration (Phase 3)
-
-// Configuration des providers d'authentification
-const googleProvider = new firebase.auth.GoogleAuthProvider();
-
-console.log('Firebase initialized');
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
